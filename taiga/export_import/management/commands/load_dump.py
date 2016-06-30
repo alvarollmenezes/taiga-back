@@ -1,6 +1,7 @@
-# Copyright (C) 2014-2016 Andrey Antukh <niwi@niwi.be>
+# Copyright (C) 2014-2016 Andrey Antukh <niwi@niwi.nz>
 # Copyright (C) 2014-2016 Jesús Espino <jespinog@gmail.com>
 # Copyright (C) 2014-2016 David Barragán <bameda@dbarragan.com>
+# Copyright (C) 2014-2016 Alejandro Alonso <alejandro.alonso@kaleidos.net>
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
@@ -24,6 +25,7 @@ from taiga.projects.models import Project
 from taiga.export_import.renderers import ExportRenderer
 from taiga.export_import.dump_service import dict_to_project, TaigaImportError
 from taiga.export_import.service import get_errors
+from taiga.users.models import User
 
 
 class Command(BaseCommand):
@@ -57,7 +59,9 @@ class Command(BaseCommand):
                     except Project.DoesNotExist:
                         pass
                     signals.post_delete.receivers = receivers_back
-                dict_to_project(data, args[1])
+
+                user = User.objects.get(email=args[1])
+                dict_to_project(data, user)
         except TaigaImportError as e:
             print("ERROR:", end=" ")
             print(e.message)

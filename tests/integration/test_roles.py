@@ -1,6 +1,7 @@
-# Copyright (C) 2014-2016 Andrey Antukh <niwi@niwi.be>
+# Copyright (C) 2014-2016 Andrey Antukh <niwi@niwi.nz>
 # Copyright (C) 2014-2016 Jesús Espino <jespinog@gmail.com>
 # Copyright (C) 2014-2016 David Barragán <bameda@dbarragan.com>
+# Copyright (C) 2014-2016 Alejandro Alonso <alejandro.alonso@kaleidos.net>
 # Copyright (C) 2014-2016 Anler Hernández <hello@anler.me>
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -35,7 +36,7 @@ def test_destroy_role_and_reassign_members(client):
     project = f.ProjectFactory.create(owner=user1)
     role1 = f.RoleFactory.create(project=project)
     role2 = f.RoleFactory.create(project=project)
-    f.MembershipFactory.create(project=project, user=user1, role=role1, is_owner=True)
+    f.MembershipFactory.create(project=project, user=user1, role=role1, is_admin=True)
     f.MembershipFactory.create(project=project, user=user2, role=role2)
 
     url = reverse("roles-detail", args=[role2.pk]) + "?moveTo={}".format(role1.pk)

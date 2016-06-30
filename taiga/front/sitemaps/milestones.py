@@ -1,4 +1,5 @@
 # Copyright (C) 2014-2016 David Barragán <bameda@dbarragan.com>
+# Copyright (C) 2014-2016 Alejandro Alonso <alejandro.alonso@kaleidos.net>
 # Copyright (C) 2014-2016 Taiga Agile LLC <support@taiga.io>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -32,6 +33,9 @@ class MilestonesSitemap(Sitemap):
                                                     project__anon_permissions__contains=["view_milestones",
                                                                                          "view_us",
                                                                                          "view_tasks"]))
+
+        # Exclude blocked projects
+        queryset = queryset.filter(project__blocked_code__isnull=True)
 
         # Project data is needed
         queryset = queryset.select_related("project")

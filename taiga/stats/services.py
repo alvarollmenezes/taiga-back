@@ -14,6 +14,7 @@
 
 
 from django.apps import apps
+from django.contrib.auth import get_user_model
 from django.db.models import Count
 from django.db.models import Q
 from django.utils import timezone
@@ -22,9 +23,13 @@ from datetime import timedelta
 from collections import OrderedDict
 
 
-def get_users_stats():
-    model = apps.get_model("users", "User")
-    queryset =  model.objects.filter(is_active=True, is_system=False)
+###########################################################################
+# Public Stats
+###########################################################################
+
+def get_users_public_stats():
+    model = get_user_model()
+    queryset = model.objects.filter(is_active=True, is_system=False)
     stats = OrderedDict()
 
     today = timezone.now()
@@ -71,9 +76,9 @@ def get_users_stats():
     return stats
 
 
-def get_projects_stats():
+def get_projects_public_stats():
     model = apps.get_model("projects", "Project")
-    queryset =  model.objects.all()
+    queryset = model.objects.all()
     stats = OrderedDict()
 
     today = timezone.now()
@@ -109,9 +114,9 @@ def get_projects_stats():
     return stats
 
 
-def get_user_stories_stats():
+def get_user_stories_public_stats():
     model = apps.get_model("userstories", "UserStory")
-    queryset =  model.objects.all()
+    queryset = model.objects.all()
     stats = OrderedDict()
 
     today = timezone.now()
@@ -128,5 +133,22 @@ def get_user_stories_stats():
                                                        .exclude(Q(created_date__week_day=1) |
                                                                 Q(created_date__week_day=7))
                                                        .count()) / 5
+
+    return stats
+
+###########################################################################
+# Discover Stats
+###########################################################################
+
+def get_projects_discover_stats(user=None):
+    model = apps.get_model("projects", "Project")
+    queryset = model.objects.all()
+    stats = OrderedDict()
+
+    # Get Public (visible) projects
+    queryset = queryset.filter(Q(is_private=False) |
+                               Q(is_private=True, anon_permissions__contains=["view_project"]))
+
+    stats["total"] = queryset.count()
 
     return stats

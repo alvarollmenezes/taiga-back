@@ -1,4 +1,5 @@
 # Copyright (C) 2014-2016 David Barragán <bameda@dbarragan.com>
+# Copyright (C) 2014-2016 Alejandro Alonso <alejandro.alonso@kaleidos.net>
 # Copyright (C) 2014-2016 Taiga Agile LLC <support@taiga.io>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -30,6 +31,9 @@ class ProjectsSitemap(Sitemap):
         queryset = project_model.objects.filter(Q(is_private=False) |
                                                 Q(is_private=True,
                                                   anon_permissions__contains=["view_project"]))
+
+        # Exclude blocked projects
+        queryset = queryset.filter(blocked_code__isnull=True)
 
         return queryset
 

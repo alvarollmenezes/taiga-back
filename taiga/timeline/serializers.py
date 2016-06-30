@@ -1,6 +1,7 @@
-# Copyright (C) 2014-2016 Andrey Antukh <niwi@niwi.be>
+# Copyright (C) 2014-2016 Andrey Antukh <niwi@niwi.nz>
 # Copyright (C) 2014-2016 Jesús Espino <jespinog@gmail.com>
 # Copyright (C) 2014-2016 David Barragán <bameda@dbarragan.com>
+# Copyright (C) 2014-2016 Alejandro Alonso <alejandro.alonso@kaleidos.net>
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
@@ -15,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.apps import apps
+from django.contrib.auth import get_user_model
 from django.forms import widgets
 
 from taiga.base.api import serializers
@@ -36,7 +38,7 @@ class TimelineSerializer(serializers.ModelSerializer):
         if hasattr(obj, "_prefetched_user"):
             user = obj._prefetched_user
         else:
-            User = apps.get_model("users", "User")
+            User = get_user_model()
             userData = obj.data.get("user", None)
             try:
                 user = User.objects.get(id=userData["id"])

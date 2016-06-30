@@ -1,6 +1,7 @@
-# Copyright (C) 2014-2016 Andrey Antukh <niwi@niwi.be>
+# Copyright (C) 2014-2016 Andrey Antukh <niwi@niwi.nz>
 # Copyright (C) 2014-2016 Jesús Espino <jespinog@gmail.com>
 # Copyright (C) 2014-2016 David Barragán <bameda@dbarragan.com>
+# Copyright (C) 2014-2016 Alejandro Alonso <alejandro.alonso@kaleidos.net>
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
@@ -78,7 +79,7 @@ def delete_project_dump(project_id, project_slug, task_id):
 @app.task
 def load_project_dump(user, dump):
     try:
-        project = dict_to_project(dump, user.email)
+        project = dict_to_project(dump, user)
     except Exception:
         ctx = {
             "user": user,

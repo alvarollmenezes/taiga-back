@@ -1,6 +1,7 @@
-# Copyright (C) 2014-2016 Andrey Antukh <niwi@niwi.be>
+# Copyright (C) 2014-2016 Andrey Antukh <niwi@niwi.nz>
 # Copyright (C) 2014-2016 Jesús Espino <jespinog@gmail.com>
 # Copyright (C) 2014-2016 David Barragán <bameda@dbarragan.com>
+# Copyright (C) 2014-2016 Alejandro Alonso <alejandro.alonso@kaleidos.net>
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
@@ -21,6 +22,7 @@ from taiga.base import filters
 from taiga.base import response
 from taiga.base.decorators import detail_route
 from taiga.base.api import ModelCrudViewSet, ModelListViewSet
+from taiga.base.api.mixins import BlockedByProjectMixin
 from taiga.base.api.utils import get_object_or_404
 from taiga.base.utils.db import get_object_or_none
 
@@ -36,7 +38,8 @@ from . import permissions
 import datetime
 
 
-class MilestoneViewSet(HistoryResourceMixin, WatchedResourceMixin, ModelCrudViewSet):
+class MilestoneViewSet(HistoryResourceMixin, WatchedResourceMixin,
+                       BlockedByProjectMixin, ModelCrudViewSet):
     serializer_class = serializers.MilestoneSerializer
     permission_classes = (permissions.MilestonePermission,)
     filter_backends = (filters.CanViewMilestonesFilterBackend,)
@@ -83,7 +86,7 @@ class MilestoneViewSet(HistoryResourceMixin, WatchedResourceMixin, ModelCrudView
 
         if self.request.user.is_authenticated():
             us_qs = attach_is_voter_to_queryset(self.request.user, us_qs)
-            us_qs = attach_is_watcher_to_queryset(self.request.user, us_qs)
+            us_qs = attach_is_watcher_to_queryset(us_qs, self.request.user)
 
         qs = qs.prefetch_related(Prefetch("user_stories", queryset=us_qs))
 
@@ -113,8 +116,8 @@ class MilestoneViewSet(HistoryResourceMixin, WatchedResourceMixin, ModelCrudView
             'estimated_finish': milestone.estimated_finish,
             'total_points': total_points,
             'completed_points': milestone.closed_points.values(),
-            'total_userstories': milestone.get_cached_user_stories().count(),
-            'completed_userstories': milestone.get_cached_user_stories().filter(is_closed=True).count(),
+            'total_userstories': milestone.cached_user_stories.count(),
+            'completed_userstories': milestone.cached_user_stories.filter(is_closed=True).count(),
             'total_tasks': milestone.tasks.count(),
             'completed_tasks': milestone.tasks.filter(status__is_closed=True).count(),
             'iocaine_doses': milestone.tasks.filter(is_iocaine=True).count(),

@@ -1,6 +1,7 @@
-# Copyright (C) 2014-2016 Andrey Antukh <niwi@niwi.be>
+# Copyright (C) 2014-2016 Andrey Antukh <niwi@niwi.nz>
 # Copyright (C) 2014-2016 Jesús Espino <jespinog@gmail.com>
 # Copyright (C) 2014-2016 David Barragán <bameda@dbarragan.com>
+# Copyright (C) 2014-2016 Alejandro Alonso <alejandro.alonso@kaleidos.net>
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
@@ -15,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.contrib import admin
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.admin import GenericTabularInline
 
 from . import models
 
@@ -37,7 +38,7 @@ class AttachmentAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-class AttachmentInline(generic.GenericTabularInline):
+class AttachmentInline(GenericTabularInline):
      model = models.Attachment
      fields = ("attached_file", "owner")
      extra = 0

@@ -1,6 +1,7 @@
 # Copyright (C) 2014-2016 Andrey Antukh <niwi@niwi.be>
 # Copyright (C) 2014-2016 Jesús Espino <jespinog@gmail.com>
 # Copyright (C) 2014-2016 David Barragán <bameda@dbarragan.com>
+# Copyright (C) 2014-2016 Alejandro Alonso <alejandro.alonso@kaleidos.net>
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
@@ -14,6 +15,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from taiga.base import routers
+from taiga.base.utils.urls import get_absolute_url
 
-router = routers.DefaultRouter(trailing_slash=False)
+from easy_thumbnails.files import get_thumbnailer
+from easy_thumbnails.exceptions import InvalidImageFormatError
+
+
+def get_thumbnail_url(file_obj, thumbnailer_size):
+    try:
+        path_url = get_thumbnailer(file_obj)[thumbnailer_size].url
+        thumb_url = get_absolute_url(path_url)
+    except InvalidImageFormatError:
+        thumb_url = None
+
+    return thumb_url

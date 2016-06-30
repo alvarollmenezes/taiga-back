@@ -1,6 +1,7 @@
-# Copyright (C) 2014-2016 Andrey Antukh <niwi@niwi.be>
+# Copyright (C) 2014-2016 Andrey Antukh <niwi@niwi.nz>
 # Copyright (C) 2014-2016 Jesús Espino <jespinog@gmail.com>
 # Copyright (C) 2014-2016 David Barragán <bameda@dbarragan.com>
+# Copyright (C) 2014-2016 Alejandro Alonso <alejandro.alonso@kaleidos.net>
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
@@ -15,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.db import models
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
@@ -68,7 +69,7 @@ class UserStory(OCCModelMixin, WatchedModelMixin, BlockedMixin, TaggedMixin, mod
                                related_name="user_stories", verbose_name=_("status"),
                                on_delete=models.SET_NULL)
     is_closed = models.BooleanField(default=False)
-    points = models.ManyToManyField("projects.Points", null=False, blank=False,
+    points = models.ManyToManyField("projects.Points", blank=False,
                                     related_name="userstories", through="RolePoints",
                                     verbose_name=_("points"))
 
@@ -96,7 +97,7 @@ class UserStory(OCCModelMixin, WatchedModelMixin, BlockedMixin, TaggedMixin, mod
                                              verbose_name=_("is client requirement"))
     team_requirement = models.BooleanField(default=False, null=False, blank=True,
                                            verbose_name=_("is team requirement"))
-    attachments = generic.GenericRelation("attachments.Attachment")
+    attachments = GenericRelation("attachments.Attachment")
     generated_from_issue = models.ForeignKey("issues.Issue", null=True, blank=True,
                                              on_delete=models.SET_NULL,
                                              related_name="generated_user_stories",
